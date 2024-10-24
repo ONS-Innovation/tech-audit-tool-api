@@ -1,0 +1,9 @@
+# Ignore Python bytecode files
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore virtual environments (common in Python projects)
+venv/
+.env/
+aws_lambda_Script/app/__pycache__/
