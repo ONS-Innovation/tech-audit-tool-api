@@ -1,5 +1,5 @@
 
-# KEH | Tech Audit Tool - API
+# Tech Audit Tool - API
 
 A Flask and flask-restx API for the tech audit tool.
 
@@ -8,7 +8,7 @@ A Flask and flask-restx API for the tech audit tool.
 Clone the project
 
 ```bash
-git clone https://github.com/ONS-Innovation/keh-tech-audit-tool-api
+git clone https://github.com/ONS-Innovation/keh-tech-audit-tool-api.git
 ```
 
 Install dependencies
@@ -26,9 +26,9 @@ make install-dev
 Set environment variables:
 
 ```bash
-export TECH_AUDIT_DATA_BUCKET='keh-tech-audit-tool'
-export TECH_AUDIT_SECRET_MANAGER='tech-audit-tool-api/secrets'
-export AWS_COGNITO_TOKEN_URL='https://keh-tech-audit-tool.auth.eu-west-2.amazoncognito.com/oauth2/token'
+export TECH_AUDIT_DATA_BUCKET='sdp-dev-tech-audit-tool-api'
+export TECH_AUDIT_SECRET_MANAGER='sdp-dev-tech-audit-tool-api/secrets'
+export AWS_COGNITO_TOKEN_URL='https://tech-audit-tool-api-sdp-dev.auth.eu-west-2.amazoncognito.com/oauth2/token'
 ```
 
 Go to the aws_lambda_script directory
@@ -86,6 +86,20 @@ View the Swagger UI [here](https://tech-audit-tool-api.sdp-sandbox.aws.onsdigita
 Retrieve your `id_token`, go to the URL above, click the green outlined button with the text `Authorize` and enter your `id_token` in the `Value` box. Click the green outlined `Authorize` button. 
 
 Now you can go through the /api/v1/ routes and test the endpoints.
+
+## MkDocs
+
+Make sure you have the docs dependencies installed to run the mkdocs commands.
+
+Install the docs dependencies:
+```bash
+make install-docs
+```
+
+Run the mkdocs:
+```bash
+make mkdocs
+```
 
 ## API Reference
 
@@ -195,7 +209,7 @@ Send JSON in this format:
         "main": [],
         "others": ["List of strings"]
       },
-      "CICD": {
+      "cicd": {
         "main": [],
         "others": ["List of strings"]
       },
@@ -207,7 +221,7 @@ Send JSON in this format:
     "stage":"Development"
   }
 ```
-Create's a project. If the languages, database, frameworks, CICD, infrastructure or source control, is not in the array_data.json bucket then it is added.
+Create's a project. If the languages, database, frameworks, cicd, infrastructure or source control, is not in the array_data.json bucket then it is added.
 
 
 ### Get autocomplete from string [REMOVED]
@@ -300,7 +314,7 @@ Send JSON in this format:
         "main": [],
         "others": ["List of strings"]
       },
-      "CICD": {
+      "cicd": {
         "main": [],
         "others": ["List of strings"]
       },
@@ -312,7 +326,7 @@ Send JSON in this format:
     "stage":"Development"
   }
 ```
-Edits a project. If the languages, database, frameworks, CICD, infrastructure or source control, is not in the array_data.json bucket then it is added.
+Edits a project. If the languages, database, frameworks, cicd, infrastructure or source control, is not in the array_data.json bucket then it is added.
 
 
 ## Authorization with Cognito and API Gateway

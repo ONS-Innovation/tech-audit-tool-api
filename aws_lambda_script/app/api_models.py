@@ -183,3 +183,13 @@ def get_project_model():
     )
 
     return project_model
+
+
+def get_refresh_model():
+    from .resources import ns
+
+    refresh_model = ns.model(
+        "Refresh",
+        {"refresh_token": fields.String(required=True, description="Refresh token")},
+    )
+    return refresh_model

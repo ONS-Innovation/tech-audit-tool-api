@@ -1,12 +1,33 @@
-# Ignore Python bytecode files
+# Python
 __pycache__/
-*.pyc
-*.pyo
-
-# Ignore virtual environments (common in Python projects)
+*.py[cod]
+*$py.class
+*.so
+.Python
 venv/
 .env/
-aws_lambda_Script/app/__pycache__/
+.coverage
+htmlcov/
 
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.json
+*.tfvars
+.terraform.lock.hcl
+
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Project specific
+aws_lambda_script/app/__pycache__/
 info.txt
+terraform_demo

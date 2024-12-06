@@ -1,0 +1,4 @@
+bucket         = "sdp-prod-tf-state"
+key            = "sdp-prod-tech-audit-tool-api-auth/terraform.tfstate"
+region         = "eu-west-2"
+dynamodb_table = "terraform-state-lock"
