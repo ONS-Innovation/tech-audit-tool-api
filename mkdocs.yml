@@ -1,0 +1,87 @@
+site_name: Tech Audit Tool API Documentation
+repo_url: https://github.com/ONS-innovation/tech-audit-tool-api
+repo_name: Tech Audit Tool API
+
+nav:
+  - Home: index.md
+  - API Documentation:
+    - Overview: api.md
+    - Endpoints:
+      - Authentication: 
+        - /verify: endpoints/auth.md
+        - /refresh: endpoints/refresh.md
+      - Projects:
+        - /projects: endpoints/projects.md
+        - /project/{project_name}: endpoints/project.md
+        - /filter: endpoints/filter.md
+      - User: endpoints/user.md
+  - Infrastructure: infrastructure.md
+  - Deployment: deployment.md
+
+theme:
+  name: material
+  language: en
+  palette:
+    # toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: white
+      accent: deep purple
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+
+    # toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: white
+      accent: deep purple
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to system preference
+
+  features:
+    - navigation.tracking
+    - navigation.sections
+    - navigation.path
+    - navigation.top
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.annotation
+    - content.code.copy
+    - header.autohide
+
+  logo: assets/logo.png
+  favicon: assets/favicon.ico
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - tables
+
+plugins:
+  - search
+  - swagger-ui-tag
+
+extra_css:
+  - https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css
+
+extra_javascript:
+  - https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js
+  - https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.js
