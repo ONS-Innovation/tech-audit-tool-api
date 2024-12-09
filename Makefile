@@ -13,7 +13,7 @@ clean: ## Clean the temporary files.
 
 .PHONY: black
 black: ## Run black.
-	poetry run black aws_lambda_script --check || true
+	poetry run black aws_lambda_script || true
 
 .PHONY: ruff
 ruff: ## Run ruff without fixing.
@@ -39,7 +39,7 @@ install:  ## Install the dependencies excluding dev.
 
 .PHONY: install-dev
 install-dev:  ## Install the dependencies including dev.
-	poetry install --no-root
+	poetry install --only dev --no-root
 
 .PHONY: pytest
 pytest:  ## Run pytest

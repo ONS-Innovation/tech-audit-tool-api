@@ -1,9 +1,9 @@
 import logging
-import requests
 import os
 from http import HTTPStatus
+import requests
 from flask_restx import Resource, Namespace, reqparse, abort
-from .api_models import get_project_model
+from .api_models import get_project_model, get_refresh_model
 from .utils import (
     read_data,
     write_data,
@@ -13,9 +13,11 @@ from .utils import (
     cognito_data,
 )
 
-
-# Set namespace as /api/ - each request has to be localhost:3000/api/v1/<endpoint>
+# Set namespace as /api/ - each request has to be <url>/api/v1/<endpoint>
 ns = Namespace("v1", path="/api/v1/", description="")
+
+project_model = get_project_model()
+refresh_model = get_refresh_model()
 
 # Create required authorization header
 parser = reqparse.RequestParser()
@@ -44,7 +46,7 @@ def get_user_email(args):
             abort(401, description="Not authorized")
         return owner_email
     except Exception as error:
-        logger.exception("Error verifying token", error)
+        logger.exception("Error verifying token: %s", error)
         abort(401, description="Not authorized")
 
 
@@ -315,7 +317,7 @@ class Projects(Resource):
     # Loop through all projects and return the ones
     # that match the user email in the first user item in the user list
     @ns.doc(responses={200: "Success", 401: "Authorization is required"})
-    @ns.marshal_with(get_project_model(), as_list=True)
+    @ns.marshal_with(project_model, as_list=True)
     def get(self):
         owner_email = get_user_email(parser.parse_args())
         data = read_data()
@@ -329,14 +331,15 @@ class Projects(Resource):
     # Add a new project to the list of projects
     # needs certain fields to be present in the JSON payload,
     # the non required will be saved as null if string or emtpy if list
-    @ns.marshal_list_with(get_project_model())
+    @ns.marshal_list_with(project_model)
     @ns.doc(
+        body=project_model,
         responses={
             201: "Created project",
             401: "Authorization is required",
             406: "Missing JSON data",
             409: "Project with the same name and owner already exists",
-        }
+        },
     )
     def post(self):
         owner_email = get_user_email(parser.parse_args())
@@ -436,7 +439,7 @@ class Projects(Resource):
 class ProjectDetail(Resource):
     # Loop through all projects and return the one that matches
     # the name and the user email in the first user item in the user list
-    @ns.marshal_list_with(get_project_model())
+    @ns.marshal_list_with(project_model)
     def get(self, project_name):
         owner_email = get_user_email(parser.parse_args())
 
@@ -459,14 +462,15 @@ class ProjectDetail(Resource):
 
     # Edit a project by taking the whole schema and replacing
     # the existing project with the same name and owner
-    @ns.marshal_list_with(get_project_model())
+    @ns.marshal_list_with(project_model)
     @ns.doc(
+        body=project_model,
         responses={
             200: "Updated project",
             401: "Authorization is required",
             404: "Project not found",
             406: "Missing JSON data",
-        }
+        },
     )
     def put(self, project_name):
         owner_email = get_user_email(parser.parse_args())
@@ -509,7 +513,6 @@ cognito_settings = cognito_data
 COGNITO_CLIENT_ID = cognito_settings["COGNITO_CLIENT_ID"]
 COGNITO_CLIENT_SECRET = cognito_settings["COGNITO_CLIENT_SECRET"]
 REDIRECT_URI = cognito_settings["REDIRECT_URI"]
-# REDIRECT_URI = 'http://localhost:8000/api/verify'
 
 verifyParser = reqparse.RequestParser()
 verifyParser.add_argument(
@@ -518,6 +521,10 @@ verifyParser.add_argument(
 
 
 @ns.route("/verify")
+@ns.doc(
+    params={"code": "Authorization code from Cognito callback"},
+    responses={200: "Success", 400: "Bad Request"},
+)
 class VerifyToken(Resource):
     # Route for handling the callback from Cognito
     def get(self):
@@ -548,6 +555,10 @@ refreshParser.add_argument(
 
 
 @ns.route("/refresh")
+@ns.doc(
+    body=refresh_model,
+    responses={200: "Success", 400: "Bad Request", 401: "Unauthorized"},
+)
 class RefreshToken(Resource):
     # Sending a refresh token to Cognito to get a new ID token.
     # Refresh can be used multiple times to get a new id_token.
@@ -562,7 +573,7 @@ class RefreshToken(Resource):
             token_response = exchange_refresh_token_for_id_token(refresh_token)
             return {"id_token": token_response["id_token"]}, 200
         except Exception as e:
-            logger.error(f"Failed to refresh token: {str(e)}")
+            logger.error("Failed to refresh token: %s", str(e))
             return {"error": "Failed to refresh token"}, 401
 
 
@@ -571,6 +582,17 @@ token_url = os.getenv("AWS_COGNITO_TOKEN_URL")
 
 
 def exchange_refresh_token_for_id_token(refresh_token):
+    """Exchange a refresh token for a new ID token from AWS Cognito.
+
+    Args:
+        refresh_token (str): The refresh token to exchange
+
+    Returns:
+        dict: Response from Cognito containing the new ID token
+
+    Raises:
+        Exception: If the token exchange fails, with error details from Cognito
+    """
     payload = {
         "grant_type": "refresh_token",
         "refresh_token": refresh_token,
@@ -578,39 +600,56 @@ def exchange_refresh_token_for_id_token(refresh_token):
     }
 
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
+    auth = (COGNITO_CLIENT_ID, COGNITO_CLIENT_SECRET)
 
     response = requests.post(
         token_url,
         data=payload,
         headers=headers,
-        auth=(COGNITO_CLIENT_ID, COGNITO_CLIENT_SECRET),
+        auth=auth,
+        timeout=10,
     )
 
     if response.status_code != HTTPStatus.OK:
-        logger.error(f"Error: {response.status_code}, {response.text}")
+        logger.error("Error: %s, %s", response.status_code, response.text)
         raise Exception(f"Error: {response.status_code}, {response.json()}")
 
     return response.json()
 
 
 def exchange_code_for_tokens(code):
+    """Exchange an authorization code for access and refresh tokens from AWS Cognito.
+
+    Args:
+        code (str): The authorization code received from the OAuth2 authorization flow.
+
+    Returns:
+        dict: Response from Cognito containing access and refresh tokens.
+
+    Raises:
+        Exception: If the token exchange fails, with error details from Cognito.
+    """
     payload = {
         "grant_type": "authorization_code",
         "code": code,
-        "redirect_uri": f"{REDIRECT_URI}/api/verify",
+        "redirect_uri": f"{REDIRECT_URI}/api/v1/verify",
     }
 
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
-
     auth = (COGNITO_CLIENT_ID, COGNITO_CLIENT_SECRET)
-
-    response = requests.post(token_url, data=payload, headers=headers, auth=auth)
+    response = requests.post(
+        token_url,
+        data=payload,
+        headers=headers,
+        auth=auth,
+        timeout=10,
+    )
 
     if response.status_code != HTTPStatus.OK:
         if response.json()["error"] == "invalid_grant":
             logger.error("Invalid authorization code")
             return {"error": "Invalid authorization code"}, 404
-        logger.error(f"Error: {response.status_code}, {response.text}")
+        logger.error("Error: %s, %s", response.status_code, response.text)
         raise Exception(f"Error: {response.status_code}, {response.json()}")
 
     # Return the parsed JSON response

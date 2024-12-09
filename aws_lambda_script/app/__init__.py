@@ -58,7 +58,7 @@ def create_app():
         authorizations=authorizations,
         security="ID Token",
         description="""An API that saves and accesses data from an S3 bucket in AWS saved and queried as JSON.
-                 Each route with /api/ must use an Authorization header with a valid Cognito ID token.""",
+                 Each route with /api/v1/ must use an Authorization header with a valid Cognito ID token.""",
     )
     api.add_namespace(ns)
 
