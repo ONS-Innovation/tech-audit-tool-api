@@ -1,11 +1,10 @@
----
 name: CI
 
-on: # yamllint disable-line rule:truthy
+on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
-    branches: [master]
+    branches: [main]
 
 concurrency:
   group: "${{ github.head_ref || github.ref }}-${{ github.workflow }}"
@@ -13,7 +12,7 @@ concurrency:
 
 jobs:
   lint-test:
-    name: Lint and Test
+    name: Lint
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -21,17 +20,22 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
-      - name: Install Poetry
-        run: pipx install poetry==1.7.1
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: poetry
+          cache: 'poetry'
         
       - name: Display Python version
         run: python -c "import sys; print(sys.version)"
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: latest
+          virtualenvs-create: true
+          virtualenvs-in-project: true
 
       - name: Install dependencies
         run: make install-dev
