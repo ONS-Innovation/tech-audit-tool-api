@@ -154,6 +154,37 @@ def get_project_model():
         },
     )
 
+    supporting_tools_model = ns.model(
+        "SupportingTools", 
+        {
+            "code_editors": fields.List(
+                fields.String, required=True, description="Code editors"
+            ),
+            "ui_tools": fields.List(
+                fields.String, required=True, description="UI tools"
+            ),
+            "diagram_tools": fields.List(
+                fields.String, required=True, description="Diagram tools"
+            ),
+            "project_tracking_tools": fields.List(
+                fields.String, required=True, description="Project tracking tools"
+            ),
+            "documentation_tools": fields.List(
+                fields.String, required=True, description="Documentation tools"
+            ),
+            "communication_tools": fields.List(
+                fields.String, required=True, description="Communication tools"
+            ),
+            "collaboration_tools": fields.List(
+                fields.String, required=True, description="Collaboration tools"
+            ),
+            "incident_management": fields.String(
+                required=True, description="Incident management tools"
+            )
+
+        }
+    )
+
     project_model = ns.model(
         "Project",
         {
@@ -178,6 +209,9 @@ def get_project_model():
             ),
             "stage": fields.String(
                 required=True, description="Stage status of the project"
+            ),
+            "supporting_tools": fields.Nested(
+                supporting_tools_model, required=True, description="Supporting Tools Details"
             ),
         },
     )

@@ -91,10 +91,118 @@ def test_post_and_get_project_with_timestamp(
     project_name = f"Test Project {datetime.datetime.now(datetime.UTC)}"
 
     new_project = {
-        "user": [{"email": ""}],  # email will be replaced by the user's email
-        "details": {"name": project_name},
-        "architecture": {"languages": {"main": "ruby", "others": ["php"]}},
-    }
+            "user": [
+                {
+                    "email": "test@ons.gov.uk",
+                    "roles": [
+                        "Technical Contact",
+                        "Editor"
+                    ],
+                    "grade": "SEO"
+                },
+                {
+                    "email": "Dariana.Ethel.Sipes@ons.gov.uk",
+                    "roles": [
+                        "Delivery Manager Contact"
+                    ],
+                    "grade": "HEO"
+                }
+            ],
+            "details": [
+                {
+                    "name": "Another test^3",
+                    "short_name": "Principal",
+                    "documentation_link": [
+                        "https://hollis.biz.ons.gov.uk"
+                    ],
+                    "project_description": "Operative hybrid instruction set"
+                }
+            ],
+            "developed": [
+                "In-house",
+                []
+            ],
+            "source_control": [
+                {
+                    "type": "GitHub",
+                    "links": [
+                        {
+                            "description": "systematic",
+                            "url": "http://dell.name"
+                        }
+                    ]
+                }
+            ],
+            "architecture": {
+                "hosting": {
+                    "type": [
+                        "Hybrid"
+                    ],
+                    "details": [
+                        "AWS",
+                        "Local"
+                    ]
+                },
+                "database": {
+                    "main": [],
+                    "others": [
+                        "DocumentDB"
+                    ]
+                },
+                "languages": {
+                    "main": [
+                        "Python"
+                    ],
+                    "others": [
+                        "JavaScript",
+                        "Java"
+                    ]
+                },
+                "frameworks": {
+                    "main": [],
+                    "others": [
+                        "Flask"
+                    ]
+                },
+                "cicd": {
+                    "main": [],
+                    "others": [
+                        "Github Actions"
+                    ]
+                },
+                "infrastructure": {
+                    "main": [],
+                    "others": [
+                        "Jenkins"
+                    ]
+                }
+            },
+            "stage": "Development",
+            "supporting_tools": {
+            "code_editors": [
+                "VSCode"
+            ],
+            "ui_tools": [
+                "Figma"
+            ],
+            "diagram_tools": [
+                "Draw.io"
+            ],
+            "project_tracking_tools": [
+                "Jira"
+            ],
+            "documentation_tools": [
+                "Confluence"
+            ],
+            "communication_tools": [
+                "Teams"
+            ],
+            "collaboration_tools": [
+                "Github"
+            ],
+            "incident_management": "ServiceNow"
+            }
+        }
 
     # POST the new project
     post_response = client.post(

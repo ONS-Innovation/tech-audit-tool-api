@@ -220,7 +220,31 @@ Send JSON in this format:
         "others": ["List of strings"]
       }
     },
-    "stage":"Development"
+    "stage":"Development",
+    "supporting_tools": {
+      "code_editors": [
+        "List of strings"
+      ],
+      "ui_tools": [
+        "List of strings"
+      ],
+      "diagram_tools": [
+        "List of strings"
+      ],
+      "project_tracking_tools": [
+        "List of strings"
+      ],
+      "documentation_tools": [
+        "List of strings"
+      ],
+      "communication_tools": [
+        "List of strings"
+      ],
+      "collaboration_tools": [
+        "List of strings"
+      ],
+      "incident_management": "string"
+    }
   }
 ```
 Creates a project. If the languages, database, frameworks, cicd, infrastructure or source control is not in the `array_data.json` bucket, then it is added.

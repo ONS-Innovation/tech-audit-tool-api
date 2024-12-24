@@ -353,6 +353,7 @@ class Projects(Resource):
             or "email" not in new_project["user"][0]
             or "name" not in new_project["details"][0]
             or "stage" not in new_project
+            or "supporting_tools" not in new_project
         ):
             abort(406, description="Missing JSON data")
 
